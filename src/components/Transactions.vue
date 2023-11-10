@@ -5,7 +5,8 @@
       v-for="transaction in transactions"
       :class="transaction.amount < 0 ? 'minus' : 'plus'"
     >
-      {{ transaction.text }} <span>${{ transaction.amount }}</span
+      {{ transaction.title }} <span>${{ transaction.amount }}</span
+      ><span>{{ transaction.date }}</span
       ><button @click="deleteTransaction(transaction.id)" class="delete-btn">
         x
       </button>

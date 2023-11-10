@@ -2,6 +2,7 @@
   <Header></Header>
   <div class="container">
     <Balance :total="+total" />
+    <Calendar :transactions="transactions" />
     <IncomeExpenses :income="+income" :expenses="+expenses" />
     <Transactions
       :transactions="transactions"
@@ -14,6 +15,7 @@
 <script setup>
 import Header from './components/Header.vue';
 import Balance from './components/Balance.vue';
+import Calendar from './components/Calendar.vue';
 import IncomeExpenses from './components/IncomeExpenses.vue';
 import Transactions from './components/Transactions.vue';
 import AddTransaction from './components/AddTransaction.vue';
@@ -58,16 +60,15 @@ const expenses = computed(() => {
 const handleTransactionSubmitted = (transactionData) => {
   transactions.value.push({
     id: generateUniqueId(),
-    text: transactionData.text,
+    title: transactionData.title,
     amount: transactionData.amount,
+    date: transactionData.date ? transactionData.date : 'None Selected',
   });
   saveTransactionsToLocalStorage();
   toast.success('Transaction added');
 };
 
 const handleTransactionDeleted = (transactionId) => {
-  console.log('hello from delete next is id');
-  console.log(transactionId);
   transactions.value = transactions.value.filter(
     (transaction) => transaction.id !== transactionId
   );

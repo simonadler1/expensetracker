@@ -2,8 +2,22 @@
   <h3>Add new transaction</h3>
   <form id="form" @submit.prevent="onSubmit">
     <div class="form-control">
-      <label for="text">Text</label>
-      <input type="text" v-model="text" id="text" placeholder="Enter text..." />
+      <label for="text">Title</label>
+      <input
+        type="text"
+        v-model="title"
+        id="text"
+        placeholder="Enter text..."
+      />
+    </div>
+    <div class="form-control">
+      <label for="date">Date</label>
+      <input
+        type="date"
+        v-model="date"
+        id="date"
+        placeholder="Enter Event Date"
+      />
     </div>
     <div class="form-control">
       <label for="amount"
@@ -28,21 +42,23 @@ const toast = useToast();
 
 const emit = defineEmits('transactionSubmitted');
 
-const text = ref('');
+const title = ref('');
+const date = ref('');
 const amount = ref('');
 
 const onSubmit = () => {
-  if (!text.value || !amount.value) {
-    toast.error('Transaction must have a text and amount');
+  if (!title.value || !amount.value) {
+    toast.error('Transaction must have a title and an amount');
     return;
   }
   const transactionData = {
-    text: text.value,
+    title: title.value,
+    date: date.value,
     amount: parseFloat(amount.value),
   };
   emit('transactionSubmitted', transactionData);
 
-  text.value = '';
+  title.value = '';
   amount.value = '';
 };
 </script>

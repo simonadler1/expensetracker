@@ -8,39 +8,66 @@
 
 <script setup>
 import { Qalendar } from 'qalendar';
-import { ref, watch } from 'vue';
+import { ref, watch, defineProps } from 'vue';
+import { format } from 'date-fns'; // Import date-fns for date formatting
 
 const props = defineProps({
   transactions: { type: Array, required: true },
 });
 
 const events = ref([]);
-// watch(props, () => {
-//   if (props.transactions.length === 0) return;
-//   events.value = [];
-//   for (let transaction of props.transactions) {
-//     events.value.push({
-//       title: transaction.title,
-//       time: { start: transaction.date, end: transaction.date },
-//       id: transaction.id,
-//       color: transaction.amount > 0 ? 'green' : 'red',
-//     });
-//   }
-// });
+const generateUniqueId = () => {
+  return Math.floor(Math.random() * 10000);
+};
+
+function generateEventsForEmptyDays(transactions) {
+  const events = [];
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1); // Start of next year
+  const endOfYear = new Date(new Date().getFullYear(), 11, 31); // End of next year
+
+  const currentDate = new Date(startOfYear);
+  let runningBalance = 0;
+
+  while (currentDate <= endOfYear) {
+    const formattedDate = format(currentDate, 'yyyy-MM-dd'); // Format the date
+
+    if (
+      !transactions.some((transaction) => transaction.date === formattedDate)
+    ) {
+      events.push({
+        title: `Balance: ${runningBalance.toFixed(2)}`,
+        description: `Balance: ${runningBalance.toFixed(2)}`,
+        id: generateUniqueId(),
+        time: { start: formattedDate, end: formattedDate },
+        color: 'blue', // Color for days with no transactions
+      });
+    }
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return events;
+}
+
 watch(props, () => {
   if (props.transactions.length === 0) return;
-  events.value = [];
   const sortedTransactions = props.transactions.sort(
     (a, b) => new Date(a.date) - new Date(b.date)
   );
 
   let runningBalance = 0;
 
+  events.value = [];
+
+  const balanceEvents = generateEventsForEmptyDays(sortedTransactions);
+
+  events.value.push(...balanceEvents);
+
   for (let transaction of sortedTransactions) {
     runningBalance += transaction.amount;
 
     events.value.push({
-      title: `${transaction.title}`,
+      title: `${transaction.title} \n ${runningBalance.toFixed(2)}`,
       description: runningBalance.toFixed(2),
       time: { start: transaction.date, end: transaction.date },
       id: transaction.id,
@@ -48,19 +75,15 @@ watch(props, () => {
     });
   }
 });
+
 const config = ref({
   disableModes: ['week', 'day'],
   month: {
-    // Hide leading and trailing dates in the month view (defaults to true when not set)
     showTrailingAndLeadingDates: false,
   },
-  // Takes any valid locale that the browser understands. However, not all locales have been thorougly tested in Qalendar
-  // If no locale is set, the preferred browser locale will be used
-
   defaultMode: 'month',
-  // The silent flag can be added, to disable the development warnings. This will also bring a slight performance boost
   isSilent: true,
-  showCurrentTime: true, // Display a line indicating the current time
+  showCurrentTime: true,
 });
 </script>
 

@@ -18,34 +18,6 @@ const props = defineProps({
 
 const events = ref([]);
 
-// function generateEventsForEmptyDays(transactions) {
-//   const events = [];
-//   const startOfYear = new Date(new Date().getFullYear(), 0, 1); // Start of next year
-//   const endOfYear = new Date(new Date().getFullYear(), 11, 31); // End of next year
-
-//   const currentDate = new Date(startOfYear);
-//   let runningBalance = 0;
-
-//   while (currentDate <= endOfYear) {
-//     const formattedDate = format(currentDate, 'yyyy-MM-dd'); // Format the date
-
-//     if (
-//       !transactions.some((transaction) => transaction.date === formattedDate)
-//     ) {
-//       events.push({
-//         title: `Balance: ${runningBalance.toFixed(2)}`,
-//         description: `Balance: ${runningBalance.toFixed(2)}`,
-//         id: generateUniqueId(),
-//         time: { start: formattedDate, end: formattedDate },
-//         color: 'blue', // Color for days with no transactions
-//       });
-//     }
-
-//     currentDate.setDate(currentDate.getDate() + 1);
-//   }
-
-//   return events;
-// }
 function generateEventsForEmptyDays(transactions) {
   const events = [];
   const startOfYear = new Date(new Date().getFullYear(), 0, 1); // Start of next year

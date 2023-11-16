@@ -19,14 +19,21 @@ import Calendar from './components/Calendar.vue';
 import IncomeExpenses from './components/IncomeExpenses.vue';
 import Transactions from './components/Transactions.vue';
 import AddTransaction from './components/AddTransaction.vue';
-
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 
 onMounted(() => {
-  const savedTransactions = JSON.parse(localStorage.getItem('transactions'));
+  let savedTransactions = JSON.parse(localStorage.getItem('transactions'));
+  // remove old transactions
+
+  savedTransactions = savedTransactions.filter((x) => {
+    console.log(new Date(x.date));
+    console.log(new Date());
+    // return new Date(x.date) >= new Date();
+    return true;
+  });
   if (savedTransactions) {
     transactions.value = savedTransactions;
   }

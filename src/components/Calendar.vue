@@ -19,11 +19,10 @@ function generateEventsForEmptyDays(transactions) {
   const today = new Date(); // Start of next year
   const endOfYear = new Date(new Date().getFullYear(), 11, 31); // End of next year
 
-  const currentDate = new Date(today);
   let runningBalance = 0;
 
-  while (currentDate <= endOfYear) {
-    const formattedDate = format(currentDate, 'yyyy-MM-dd'); // Format the date
+  while (today <= endOfYear) {
+    const formattedDate = format(today, 'yyyy-MM-dd'); // Format the date
 
     const matchingTransaction = transactions.find(
       (transaction) => transaction.date === formattedDate
@@ -38,10 +37,9 @@ function generateEventsForEmptyDays(transactions) {
       description: `Balance: ${runningBalance.toFixed(2)}`,
       id: generateUniqueId(),
       time: { start: formattedDate, end: formattedDate },
-      color: 'blue', // Color for days with no transactions
     });
 
-    currentDate.setDate(currentDate.getDate() + 1);
+    today.setDate(today.getDate() + 1);
   }
 
   return events;

@@ -1,13 +1,9 @@
 <template>
-  <Qalendar :events="events" :config="config">
-    <template #monthEvent="monthEventProps">
-      <span>1{{ monthEventProps.eventData.title }}</span>
-    </template>
-  </Qalendar>
+  <CalendarMonth :events="events" />
 </template>
 
 <script setup>
-import { Qalendar } from 'qalendar';
+import CalendarMonth from './homemadecalendar/CalendarMonth.vue';
 import { ref, watch, defineProps } from 'vue';
 import { format } from 'date-fns'; // Import date-fns for date formatting
 import { generateUniqueId } from '../utils/generateUniqueId';
@@ -20,10 +16,10 @@ const events = ref([]);
 
 function generateEventsForEmptyDays(transactions) {
   const events = [];
-  const startOfYear = new Date(new Date().getFullYear(), 0, 1); // Start of next year
+  const today = new Date(); // Start of next year
   const endOfYear = new Date(new Date().getFullYear(), 11, 31); // End of next year
 
-  const currentDate = new Date(startOfYear);
+  const currentDate = new Date(today);
   let runningBalance = 0;
 
   while (currentDate <= endOfYear) {

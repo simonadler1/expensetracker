@@ -6,7 +6,7 @@
       :class="transaction.amount < 0 ? 'minus' : 'plus'"
     >
       {{ transaction.title }} <span>${{ transaction.amount }}</span
-      ><span>{{ transaction.date }}</span
+      ><span>{{ dayjs(transaction.date).format('YYYY-MM-DD') }}</span
       ><button @click="deleteTransaction(transaction.id)" class="delete-btn">
         x
       </button>
@@ -14,6 +14,7 @@
   </ul>
 </template>
 <script setup>
+import dayjs from 'dayjs';
 const props = defineProps({
   transactions: { type: Array, required: true },
 });

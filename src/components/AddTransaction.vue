@@ -53,7 +53,7 @@ const onSubmit = () => {
   }
   const transactionData = {
     title: title.value,
-    date: date.value,
+    date: new Date(date.value),
     amount: parseFloat(amount.value),
   };
   emit('transactionSubmitted', transactionData);

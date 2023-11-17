@@ -86,9 +86,9 @@ export default {
     currentMonthDays() {
       return [...Array(this.numberOfDaysInMonth)].map((day, index) => {
         return {
-          date: dayjs(`${this.year}-${this.month}-${index + 1}`).format(
-            'YYYY-MM-DD'
-          ),
+          date: dayjs()
+            .add(index + 1, 'day')
+            .toISOString(),
           isCurrentMonth: true,
         };
       });
@@ -152,7 +152,11 @@ export default {
 
   methods: {
     getEventsForDay(date) {
-      return this.events.filter((event) => event.time.start === date);
+      return this.events.filter(
+        (event) =>
+          dayjs(event.time.start).format('YYYY-MM-DD') ===
+          dayjs(date).format('YYYY-MM-DD')
+      );
     },
     getWeekday(date) {
       return dayjs(date).weekday();

@@ -1,9 +1,9 @@
 <template>
   <Header></Header>
   <div class="container">
-    <Balance :total="+total" />
+    <Balance :total="total" />
     <Calendar :transactions="transactions" />
-    <IncomeExpenses :income="+income" :expenses="+expenses" />
+    <IncomeExpenses :income="income" :expenses="expenses" />
     <Transactions
       :transactions="transactions"
       @transactionDeleted="handleTransactionDeleted"
@@ -87,4 +87,9 @@ const saveTransactionsToLocalStorage = () => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.container {
+  max-width: 100%;
+  padding: 0 15px;
+}
+</style>

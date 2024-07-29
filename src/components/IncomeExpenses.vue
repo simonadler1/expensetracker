@@ -12,7 +12,7 @@
 </template>
 <script setup>
 const props = defineProps({
-  income: Number,
-  expenses: Number,
+  income: String,
+  expenses: String,
 });
 </script>

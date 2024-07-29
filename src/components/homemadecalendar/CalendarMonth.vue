@@ -31,6 +31,8 @@
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
+import utc from 'dayjs/plugin/utc';
+
 import CalendarMonthDayItem from './CalendarMonthDayItem.vue';
 import CalendarDateIndicator from './CalendarDateIndicator.vue';
 import CalendarDateSelector from './CalendarDateSelector.vue';
@@ -38,7 +40,7 @@ import CalendarWeekdays from './CalendarWeekdays.vue';
 
 dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
-
+dayjs.extend(utc);
 export default {
   name: 'CalendarMonth',
   props: {
@@ -86,9 +88,7 @@ export default {
     currentMonthDays() {
       return [...Array(this.numberOfDaysInMonth)].map((day, index) => {
         return {
-          date: dayjs()
-            .add(index + 1, 'day')
-            .toISOString(),
+          date: dayjs(`${this.year}-${this.month}-${index + 1}`).format('YYYY-MM-DD'),
           isCurrentMonth: true,
         };
       });
@@ -152,11 +152,12 @@ export default {
 
   methods: {
     getEventsForDay(date) {
-      return this.events.filter(
-        (event) =>
-          dayjs(event.time.start).format('YYYY-MM-DD') ===
-          dayjs(date).format('YYYY-MM-DD')
-      );
+      return this.events.filter((event) => {
+        return (
+          dayjs.utc(event.time.start).format('YYYY-MM-DD') ===
+          dayjs.utc(date).format('YYYY-MM-DD')
+        );
+      });
     },
     getWeekday(date) {
       return dayjs(date).weekday();
@@ -174,6 +175,9 @@ export default {
   position: relative;
   background-color: var(--grey-200);
   border: solid 1px var(--grey-300);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .day-of-week {
@@ -201,5 +205,54 @@ export default {
   grid-column-gap: var(--grid-gap);
   grid-row-gap: var(--grid-gap);
   border-top: solid 1px var(--grey-200);
+}
+
+/* Responsive styles */
+@media screen and (min-width: 768px) {
+  .calendar-month {
+    max-width: 90%;
+  }
+
+  .day-of-week,
+  .days-grid {
+    font-size: 1.1em;
+  }
+
+  .days-grid {
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .calendar-month {
+    max-width: 95%;
+  }
+
+  .day-of-week,
+  .days-grid {
+    font-size: 1.2em;
+  }
+
+  .days-grid {
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .calendar-month {
+    max-width: 1400px;
+  }
+
+  .day-of-week,
+  .days-grid {
+    font-size: 1.3em;
+  }
+
+  .days-grid {
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+  }
 }
 </style>

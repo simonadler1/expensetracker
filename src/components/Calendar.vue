@@ -1,11 +1,13 @@
 <template>
-  <CalendarMonth :events="events" />
+  <div class="calendar-wrapper">
+    <CalendarMonth :events="events" />
+  </div>
 </template>
 
 <script setup>
-import CalendarMonth from './homemadecalendar/CalendarMonth.vue';
-import { ref, watch, defineProps } from 'vue';
-import { generateUniqueId } from '../utils/generateUniqueId';
+import CalendarMonth from "./homemadecalendar/CalendarMonth.vue";
+import { ref, watch, computed } from "vue";
+import { generateUniqueId } from "../utils/generateUniqueId";
 
 const props = defineProps({
   transactions: { type: Array, required: true },
@@ -13,65 +15,80 @@ const props = defineProps({
 
 const events = ref([]);
 
-function generateEventsForEmptyDays(transactions) {
+const sortedTransactions = computed(() => {
+  return props.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+});
+
+function generateEvents(transactions) {
   const events = [];
   const today = new Date();
-  const endOfYear = new Date(new Date().getFullYear(), 11, 31); // End of year
-
+  const endOfYear = new Date(new Date().getFullYear(), 11, 31);
   let runningBalance = 0;
+  let dateIdx = new Date(today.getFullYear(), today.getMonth(), 1);
+  dateIdx.setHours(0, 0, 0, 0);
 
-  while (today <= endOfYear) {
-    const matchingTransaction = transactions.find(
-      (transaction) => transaction.date === today
-    );
-
-    if (matchingTransaction) {
-      runningBalance += matchingTransaction.amount;
+  // Calculate daily balance
+  transactions.forEach((transaction) => {
+    if (new Date(transaction.date) < dateIdx) {
+      runningBalance += transaction.amount;
     }
+  });
 
-    events.push({
-      title: `Balance: ${runningBalance.toFixed(2)}`,
-      description: `Balance: ${runningBalance.toFixed(2)}`,
-      id: generateUniqueId(),
-      time: { start: today, end: today },
+  while (dateIdx <= endOfYear) {
+    const dateString = dateIdx.toISOString().split("T")[0];
+    const matchingTransactions = transactions.filter((t) => {
+      const transactionDateWithoutTime = t.date.split("T")[0];
+      return transactionDateWithoutTime === dateString;
     });
 
-    today.setDate(today.getDate() + 1);
+    let dailyIncome = 0;
+    let dailyExpense = 0;
+
+    matchingTransactions.forEach((transaction) => {
+      runningBalance += transaction.amount;
+      if (transaction.amount >= 0) {
+        dailyIncome += transaction.amount;
+      } else {
+        dailyExpense += Math.abs(transaction.amount);
+      }
+    });
+
+    // Add a single event for the day with all necessary information
+    events.push({
+      title: `Daily Summary`,
+      balance: runningBalance,
+      income: dailyIncome,
+      expense: dailyExpense,
+      time: { start: new Date(dateIdx), end: new Date(dateIdx) },
+      id: generateUniqueId(),
+    });
+
+    dateIdx.setDate(dateIdx.getDate() + 1);
   }
 
   return events;
 }
 
 watch(
-  props,
-  () => {
-    if (props.transactions.length === 0) return;
-    const sortedTransactions = props.transactions.sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-
-    let runningBalance = 0;
-
-    events.value = [];
-
-    for (let transaction of sortedTransactions) {
-      runningBalance += transaction.amount;
-      events.value.push({
-        title: `${transaction.title} \n ${runningBalance.toFixed(2)}`,
-        description: runningBalance.toFixed(2),
-        time: { start: transaction.date, end: transaction.date },
-        id: transaction.id,
-        color: transaction.amount > 0 ? 'green' : 'red',
-      });
-    }
-    const balanceEvents = generateEventsForEmptyDays(sortedTransactions);
-
-    events.value.push(...balanceEvents);
+  sortedTransactions,
+  (newTransactions) => {
+    events.value = generateEvents(newTransactions);
   },
   { deep: true, immediate: true }
 );
 </script>
 
 <style lang="scss">
-@import 'qalendar/dist/style.css';
+@import "qalendar/dist/style.css";
+
+.calendar-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .qalendar__month-view {
+    min-width: 600px;
+  }
+}
 </style>

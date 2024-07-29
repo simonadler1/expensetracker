@@ -4,6 +4,6 @@
 </template>
 <script setup>
 const props = defineProps({
-  total: Number,
+  total: String,
 });
 </script>

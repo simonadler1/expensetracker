@@ -1,16 +1,16 @@
 <template>
   <div class="calendar-date-selector">
-    <span @click="selectPrevious"></span>
+    <span @click="selectPrevious">-</span>
     <span @click="selectCurrent">Today</span>
     <span @click="selectNext">></span>
   </div>
 </template>
 
 <script>
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 export default {
-  name: 'CalendarModeSelector',
+  name: "CalendarModeSelector",
 
   props: {
     currentDate: {
@@ -26,18 +26,18 @@ export default {
 
   methods: {
     selectPrevious() {
-      let newSelectedDate = dayjs(this.selectedDate).subtract(1, 'month');
-      this.$emit('dateSelected', newSelectedDate);
+      let newSelectedDate = dayjs(this.selectedDate).subtract(1, "month");
+      this.$emit("dateSelected", newSelectedDate);
     },
 
     selectCurrent() {
       let newSelectedDate = dayjs(this.currentDate);
-      this.$emit('dateSelected', newSelectedDate);
+      this.$emit("dateSelected", newSelectedDate);
     },
 
     selectNext() {
-      let newSelectedDate = dayjs(this.selectedDate).add(1, 'month');
-      this.$emit('dateSelected', newSelectedDate);
+      let newSelectedDate = dayjs(this.selectedDate).add(1, "month");
+      this.$emit("dateSelected", newSelectedDate);
     },
   },
 };

@@ -1,16 +1,9 @@
 <template>
   <div class="calendar-month">
     <div class="calendar-month-header">
-      <CalendarDateIndicator
-        :selected-date="selectedDate"
-        class="calendar-month-header-selected-month"
-      />
+      <CalendarDateIndicator :selected-date="selectedDate" class="calendar-month-header-selected-month" />
 
-      <CalendarDateSelector
-        :current-date="today"
-        :selected-date="selectedDate"
-        @dateSelected="selectDate"
-      />
+      <CalendarDateSelector :current-date="today" :selected-date="selectedDate" @dateSelected="selectDate" />
     </div>
 
     <CalendarWeekdays />
@@ -28,21 +21,21 @@
 </template>
 
 <script>
-import dayjs from 'dayjs';
-import weekday from 'dayjs/plugin/weekday';
-import weekOfYear from 'dayjs/plugin/weekOfYear';
-import utc from 'dayjs/plugin/utc';
+import dayjs from "dayjs";
+import weekday from "dayjs/plugin/weekday";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import utc from "dayjs/plugin/utc";
 
-import CalendarMonthDayItem from './CalendarMonthDayItem.vue';
-import CalendarDateIndicator from './CalendarDateIndicator.vue';
-import CalendarDateSelector from './CalendarDateSelector.vue';
-import CalendarWeekdays from './CalendarWeekdays.vue';
+import CalendarMonthDayItem from "./CalendarMonthDayItem.vue";
+import CalendarDateIndicator from "./CalendarDateIndicator.vue";
+import CalendarDateSelector from "./CalendarDateSelector.vue";
+import CalendarWeekdays from "./CalendarWeekdays.vue";
 
 dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
 dayjs.extend(utc);
 export default {
-  name: 'CalendarMonth',
+  name: "CalendarMonth",
   props: {
     events: Array,
   },
@@ -62,23 +55,19 @@ export default {
 
   computed: {
     days() {
-      return [
-        ...this.previousMonthDays,
-        ...this.currentMonthDays,
-        ...this.nextMonthDays,
-      ];
+      return [...this.previousMonthDays, ...this.currentMonthDays, ...this.nextMonthDays];
     },
 
     today() {
-      return dayjs().format('YYYY-MM-DD');
+      return dayjs().format("YYYY-MM-DD");
     },
 
     month() {
-      return Number(this.selectedDate.format('M'));
+      return Number(this.selectedDate.format("M"));
     },
 
     year() {
-      return Number(this.selectedDate.format('YYYY'));
+      return Number(this.selectedDate.format("YYYY"));
     },
 
     numberOfDaysInMonth() {
@@ -88,52 +77,37 @@ export default {
     currentMonthDays() {
       return [...Array(this.numberOfDaysInMonth)].map((day, index) => {
         return {
-          date: dayjs(`${this.year}-${this.month}-${index + 1}`).format('YYYY-MM-DD'),
+          date: dayjs(`${this.year}-${this.month}-${index + 1}`).toISOString(),
           isCurrentMonth: true,
         };
       });
     },
 
     previousMonthDays() {
-      const firstDayOfTheMonthWeekday = this.getWeekday(
-        this.currentMonthDays[0].date
-      );
-      const previousMonth = dayjs(`${this.year}-${this.month}-01`).subtract(
-        1,
-        'month'
-      );
+      const firstDayOfTheMonthWeekday = this.getWeekday(this.currentMonthDays[0].date);
+      const previousMonth = dayjs(`${this.year}-${this.month}-01`).subtract(1, "month");
 
       // Cover first day of the month being sunday (firstDayOfTheMonthWeekday === 0)
-      const visibleNumberOfDaysFromPreviousMonth = firstDayOfTheMonthWeekday
-        ? firstDayOfTheMonthWeekday - 1
-        : 6;
+      const visibleNumberOfDaysFromPreviousMonth = firstDayOfTheMonthWeekday ? firstDayOfTheMonthWeekday - 1 : 6;
 
-      const previousMonthLastMondayDayOfMonth = dayjs(
-        this.currentMonthDays[0].date
-      )
-        .subtract(visibleNumberOfDaysFromPreviousMonth, 'day')
+      const previousMonthLastMondayDayOfMonth = dayjs(this.currentMonthDays[0].date)
+        .subtract(visibleNumberOfDaysFromPreviousMonth, "day")
         .date();
 
-      return [...Array(visibleNumberOfDaysFromPreviousMonth)].map(
-        (day, index) => {
-          return {
-            date: dayjs(
-              `${previousMonth.year()}-${previousMonth.month() + 1}-${
-                previousMonthLastMondayDayOfMonth + index
-              }`
-            ).format('YYYY-MM-DD'),
-            isCurrentMonth: false,
-          };
-        }
-      );
+      return [...Array(visibleNumberOfDaysFromPreviousMonth)].map((day, index) => {
+        return {
+          date: dayjs(
+            `${previousMonth.year()}-${previousMonth.month() + 1}-${previousMonthLastMondayDayOfMonth + index}`
+          ).format("YYYY-MM-DD"),
+          isCurrentMonth: false,
+        };
+      });
     },
 
     nextMonthDays() {
-      const lastDayOfTheMonthWeekday = this.getWeekday(
-        `${this.year}-${this.month}-${this.currentMonthDays.length}`
-      );
+      const lastDayOfTheMonthWeekday = this.getWeekday(`${this.year}-${this.month}-${this.currentMonthDays.length}`);
 
-      const nextMonth = dayjs(`${this.year}-${this.month}-01`).add(1, 'month');
+      const nextMonth = dayjs(`${this.year}-${this.month}-01`).add(1, "month");
 
       const visibleNumberOfDaysFromNextMonth = lastDayOfTheMonthWeekday
         ? 7 - lastDayOfTheMonthWeekday
@@ -141,9 +115,7 @@ export default {
 
       return [...Array(visibleNumberOfDaysFromNextMonth)].map((day, index) => {
         return {
-          date: dayjs(
-            `${nextMonth.year()}-${nextMonth.month() + 1}-${index + 1}`
-          ).format('YYYY-MM-DD'),
+          date: dayjs(`${nextMonth.year()}-${nextMonth.month() + 1}-${index + 1}`).format("YYYY-MM-DD"),
           isCurrentMonth: false,
         };
       });
@@ -153,10 +125,7 @@ export default {
   methods: {
     getEventsForDay(date) {
       return this.events.filter((event) => {
-        return (
-          dayjs.utc(event.time.start).format('YYYY-MM-DD') ===
-          dayjs.utc(date).format('YYYY-MM-DD')
-        );
+        return dayjs.utc(event.time.start).format("YYYY-MM-DD") === dayjs.utc(date).format("YYYY-MM-DD");
       });
     },
     getWeekday(date) {

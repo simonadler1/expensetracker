@@ -1,5 +1,6 @@
 <template>
   <div class="calendar-wrapper">
+    <!-- {{ events }} -->
     <CalendarMonth :events="events" />
   </div>
 </template>
@@ -24,46 +25,42 @@ function generateEvents(transactions) {
   const today = new Date();
   const endOfYear = new Date(new Date().getFullYear(), 11, 31);
   let runningBalance = 0;
-  let dateIdx = new Date(today.getFullYear(), today.getMonth(), 1);
-  dateIdx.setHours(0, 0, 0, 0);
+  let currentDate = new Date(today);
+  currentDate.setHours(0, 0, 0, 0);
 
-  // Calculate daily balance
+  // Calculate initial balance
   transactions.forEach((transaction) => {
-    if (new Date(transaction.date) < dateIdx) {
+    if (new Date(transaction.date) < currentDate) {
       runningBalance += transaction.amount;
     }
   });
 
-  while (dateIdx <= endOfYear) {
-    const dateString = dateIdx.toISOString().split("T")[0];
-    const matchingTransactions = transactions.filter((t) => {
-      const transactionDateWithoutTime = t.date.split("T")[0];
-      return transactionDateWithoutTime === dateString;
-    });
+  while (currentDate <= endOfYear) {
+    const dateString = currentDate.toISOString().split("T")[0];
+    const matchingTransactions = transactions.filter((t) => t.date === dateString);
 
-    let dailyIncome = 0;
-    let dailyExpense = 0;
+    if (matchingTransactions.length > 0) {
+      matchingTransactions.forEach((transaction) => {
+        runningBalance += transaction.amount;
+        events.push({
+          title: `${transaction.title} \n Balance: $${runningBalance.toFixed(2)}`,
+          description: `${transaction.amount >= 0 ? "Income" : "Expense"}: $${Math.abs(transaction.amount).toFixed(2)}`,
+          time: { start: new Date(currentDate), end: new Date(currentDate) },
+          id: transaction.id,
+          color: transaction.amount >= 0 ? "green" : "red",
+        });
+      });
+    } else {
+      events.push({
+        title: `Balance: $${runningBalance.toFixed(2)}`,
+        description: `Daily Balance`,
+        id: generateUniqueId(),
+        time: { start: new Date(currentDate), end: new Date(currentDate) },
+        color: "blue",
+      });
+    }
 
-    matchingTransactions.forEach((transaction) => {
-      runningBalance += transaction.amount;
-      if (transaction.amount >= 0) {
-        dailyIncome += transaction.amount;
-      } else {
-        dailyExpense += Math.abs(transaction.amount);
-      }
-    });
-
-    // Add a single event for the day with all necessary information
-    events.push({
-      title: `Daily Summary`,
-      balance: runningBalance,
-      income: dailyIncome,
-      expense: dailyExpense,
-      time: { start: new Date(dateIdx), end: new Date(dateIdx) },
-      id: generateUniqueId(),
-    });
-
-    dateIdx.setDate(dateIdx.getDate() + 1);
+    currentDate.setDate(currentDate.getDate() + 1);
   }
 
   return events;

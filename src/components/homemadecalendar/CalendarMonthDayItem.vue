@@ -9,6 +9,7 @@
     <span>{{ label }}</span>
     <div class="day-content">
       <div class="balance">Balance: {{ formattedBalance }}</div>
+
       <div v-if="hasTransactions" class="transactions">
         <div v-if="income > 0" class="income">Income: {{ formattedIncome }}</div>
         <div v-if="expense > 0" class="expense">Expense: {{ formattedExpense }}</div>

@@ -13,7 +13,7 @@
         v-for="day in days"
         :key="day.date"
         :day="day"
-        :is-today="day.date === today"
+        :isToday="day.date === today"
         :events="getEventsForDay(day.date)"
       />
     </ol>
@@ -77,7 +77,9 @@ export default {
     currentMonthDays() {
       return [...Array(this.numberOfDaysInMonth)].map((day, index) => {
         return {
-          date: dayjs(`${this.year}-${this.month}-${index + 1}`).toISOString(),
+          date: dayjs(`${this.year}-${this.month}-${index + 1}`)
+            .toISOString()
+            .split("T")[0],
           isCurrentMonth: true,
         };
       });

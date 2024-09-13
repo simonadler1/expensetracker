@@ -45,7 +45,10 @@ function generateEvents(transactions) {
         events.push({
           title: `${transaction.title} \n Balance: $${runningBalance.toFixed(2)}`,
           description: `${transaction.amount >= 0 ? "Income" : "Expense"}: $${Math.abs(transaction.amount).toFixed(2)}`,
-          time: { start: new Date(currentDate), end: new Date(currentDate) },
+          time: {
+            start: new Date(currentDate).toISOString().split("T")[0],
+            end: new Date(currentDate).toISOString().split("T")[0],
+          },
           id: transaction.id,
           color: transaction.amount >= 0 ? "green" : "red",
         });
@@ -55,7 +58,10 @@ function generateEvents(transactions) {
         title: `Balance: $${runningBalance.toFixed(2)}`,
         description: `Daily Balance`,
         id: generateUniqueId(),
-        time: { start: new Date(currentDate), end: new Date(currentDate) },
+        time: {
+          start: new Date(currentDate).toISOString().split("T")[0],
+          end: new Date(currentDate).toISOString().split("T")[0],
+        },
         color: "blue",
       });
     }

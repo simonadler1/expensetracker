@@ -44,6 +44,7 @@ function generateEvents(transactions) {
         runningBalance += transaction.amount;
         events.push({
           title: `${transaction.title} \n Balance: $${runningBalance.toFixed(2)}`,
+          runningBalance: runningBalance,
           description: `${transaction.amount >= 0 ? "Income" : "Expense"}: $${Math.abs(transaction.amount).toFixed(2)}`,
           time: {
             start: new Date(currentDate).toISOString().split("T")[0],
@@ -56,6 +57,7 @@ function generateEvents(transactions) {
     } else {
       events.push({
         title: `Balance: $${runningBalance.toFixed(2)}`,
+        runningBalance: runningBalance,
         description: `Daily Balance`,
         id: generateUniqueId(),
         time: {

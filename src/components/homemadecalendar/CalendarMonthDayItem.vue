@@ -79,11 +79,12 @@ export default {
 
   methods: {
     getBalanceFromEvent(event) {
-      const balancePart = event.title.split("\n").find((part) => part.startsWith("Balance:"));
-      if (balancePart) {
-        return parseFloat(balancePart.split(":")[1].trim()) || 0;
-      }
-      return 0;
+      return event.runningBalance;
+      // const balancePart = event.title.split("\n").find((part) => part.startsWith("Balance:"));
+      // if (balancePart) {
+      //   return parseFloat(balancePart.split(":")[1].trim()) || 0;
+      // }
+      // return 0;
     },
     getAmountFromEvent(event) {
       return 0;

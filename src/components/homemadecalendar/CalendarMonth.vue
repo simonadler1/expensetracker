@@ -14,6 +14,7 @@
         :key="day.date"
         :day="day"
         :isToday="day.date === today"
+        :isCurrentMonth="day.isCurrentMonth"
         :events="getEventsForDay(day.date)"
       />
     </ol>
@@ -59,6 +60,9 @@ export default {
     },
 
     today() {
+      console.log(dayjs().format("YYYY-MM-DD"));
+      console.log(this.days[18].date);
+
       return dayjs().format("YYYY-MM-DD");
     },
 

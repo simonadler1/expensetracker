@@ -80,6 +80,11 @@ export default {
 
     currentMonthDays() {
       return [...Array(this.numberOfDaysInMonth)].map((day, index) => {
+        console.log(
+          dayjs(`${this.year}-${this.month}-${index + 1}`)
+            .toISOString()
+            .split("T")[0]
+        );
         return {
           date: dayjs(`${this.year}-${this.month}-${index + 1}`)
             .toISOString()
@@ -131,6 +136,8 @@ export default {
   methods: {
     getEventsForDay(date) {
       return this.events.filter((event) => {
+        console.log(event.date);
+
         return dayjs.utc(event.time.start).format("YYYY-MM-DD") === dayjs.utc(date).format("YYYY-MM-DD");
       });
     },

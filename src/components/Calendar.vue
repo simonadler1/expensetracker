@@ -1,6 +1,5 @@
 <template>
   <div class="calendar-wrapper">
-    <!-- {{ events }} -->
     <CalendarMonth :events="events" />
   </div>
 </template>
@@ -43,7 +42,7 @@ function generateEvents(transactions) {
       matchingTransactions.forEach((transaction) => {
         runningBalance += transaction.amount;
         events.push({
-          title: `${transaction.title} \n Balance: $${runningBalance.toFixed(2)}`,
+          title: transaction.title,
           runningBalance: runningBalance,
           description: `${transaction.amount >= 0 ? "Income" : "Expense"}: $${Math.abs(transaction.amount).toFixed(2)}`,
           time: {
@@ -56,7 +55,7 @@ function generateEvents(transactions) {
       });
     } else {
       events.push({
-        title: `Balance: $${runningBalance.toFixed(2)}`,
+        title: runningBalance.toFixed(2),
         runningBalance: runningBalance,
         description: `Daily Balance`,
         id: generateUniqueId(),

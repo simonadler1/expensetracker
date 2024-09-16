@@ -9,10 +9,11 @@
     <span>{{ label }}</span>
     <div class="day-content">
       <div class="balance">Balance: {{ formattedBalance }}</div>
-
-      <div v-if="hasTransactions" class="transactions">
-        <div v-if="income > 0" class="income">Income: {{ formattedIncome }}</div>
-        <div v-if="expense > 0" class="expense">Expense: {{ formattedExpense }}</div>
+      <div v-for="event of events" :key="event.id">
+        <div v-if="event.title" class="transactions">
+          <span :style="{ color: event.color }">{{ event.title }}</span>
+          <span>{{ event.description }}</span>
+        </div>
       </div>
     </div>
   </li>
@@ -51,39 +52,13 @@ export default {
       const lastEvent = this.dayEvents[this.dayEvents.length - 1];
       return lastEvent ? lastEvent.runningBalance : 0;
     },
-    income() {
-      return this.dayEvents.reduce((total, event) => {
-        const amount = this.getAmountFromEvent(event);
-        return amount > 0 ? total + amount : total;
-      }, 0);
-    },
-    expense() {
-      return this.dayEvents.reduce((total, event) => {
-        const amount = this.getAmountFromEvent(event);
-        return amount < 0 ? total - amount : total;
-      }, 0);
-    },
+
     formattedBalance() {
       return this.balance.toFixed(2);
     },
-    formattedIncome() {
-      return this.income.toFixed(2);
-    },
-    formattedExpense() {
-      return this.expense.toFixed(2);
-    },
-    hasTransactions() {
-      return this.income > 0 || this.expense > 0;
-    },
   },
 
-  methods: {
-    getAmountFromEvent(event) {
-      return 0;
-      const amount = parseFloat(event.description.split(":")[1].trim()) || 0;
-      return event.description.startsWith("Income") ? amount : -amount;
-    },
-  },
+  methods: {},
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <Header></Header>
   <div class="container">
-    <Balance :total="total" />
+    <Balance :total="todaysTotal" />
     <Calendar :transactions="transactions" :key="key" />
     <IncomeExpenses :income="income" :expenses="expenses" />
     <Transactions :transactions="transactions" @transactionDeleted="handleTransactionDeleted" />
@@ -33,6 +33,14 @@ onBeforeMount(() => {
 });
 let key = 0;
 const transactions = ref([]);
+const todaysTotal = computed(() => {
+  return transactions.value
+    .filter((transaction) => transaction.date === new Date().toISOString().split("T")[0])
+    .reduce((acc, transaction) => {
+      return acc + transaction.amount;
+    }, 0)
+    .toFixed(2);
+});
 const total = computed(() => {
   return transactions.value
     .reduce((acc, transaction) => {
@@ -40,6 +48,7 @@ const total = computed(() => {
     }, 0)
     .toFixed(2);
 });
+
 const income = computed(() => {
   return transactions.value
     .filter((transaction) => transaction.amount > 0)

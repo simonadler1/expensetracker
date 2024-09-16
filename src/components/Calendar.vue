@@ -23,16 +23,9 @@ function generateEvents(transactions) {
   const events = [];
   const today = new Date();
   const endOfYear = new Date(new Date().getFullYear(), 11, 31);
-  let runningBalance = 0;
+  let initialBalance = 0;
   let currentDate = new Date(today);
   currentDate.setHours(0, 0, 0, 0);
-
-  // Calculate initial balance
-  transactions.forEach((transaction) => {
-    if (new Date(transaction.date) < currentDate) {
-      runningBalance += transaction.amount;
-    }
-  });
 
   while (currentDate <= endOfYear) {
     const dateString = currentDate.toISOString().split("T")[0];
@@ -40,10 +33,9 @@ function generateEvents(transactions) {
 
     if (matchingTransactions.length > 0) {
       matchingTransactions.forEach((transaction) => {
-        runningBalance += transaction.amount;
         events.push({
           title: transaction.title,
-          runningBalance: runningBalance,
+          runningBalance: initialBalance + transaction.amount,
           description: `${transaction.amount >= 0 ? "Income" : "Expense"}: $${Math.abs(transaction.amount).toFixed(2)}`,
           time: {
             start: new Date(currentDate).toISOString().split("T")[0],
@@ -53,10 +45,10 @@ function generateEvents(transactions) {
           color: transaction.amount >= 0 ? "green" : "red",
         });
       });
+      initialBalance += matchingTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
     } else {
       events.push({
-        title: runningBalance.toFixed(2),
-        runningBalance: runningBalance,
+        runningBalance: initialBalance,
         description: `Daily Balance`,
         id: generateUniqueId(),
         time: {
